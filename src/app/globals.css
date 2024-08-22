@@ -285,3 +285,73 @@ body {
   text-transform: uppercase;
   font-weight: bold;
 }
+
+/* For screens less than 768px wide */
+@media (max-width: 768px) {
+  .filter-wrapper {
+    flex-direction: column;
+    align-items: center; /* Center align the buttons */
+    gap: 15px; /* Add some spacing between elements */
+  }
+
+  .filter-container,
+  .action-buttons {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap; /* Allow buttons to wrap if needed */
+    gap: 10px;
+  }
+
+  .filter-button,
+  .action-button {
+    width: auto;
+    flex: 1 1 48%; /* Make buttons take up half the width, with some space */
+    text-align: center;
+    padding: 10px 15px;
+  }
+}
+
+/* Even smaller screens, like phones */
+@media (max-width: 480px) {
+  .filter-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .filter-container,
+  .action-buttons {
+    width: 100%;
+    flex-direction: column; /* Stack the buttons vertically */
+    align-items: center;
+    gap: 10px;
+  }
+
+  .filter-button,
+  .action-button {
+    width: 100%; /* Make buttons full width */
+    max-width: 250px; /* Set a max-width to avoid stretching too much */
+    text-align: center;
+    padding: 12px 20px;
+  }
+}
+/* For smaller screens, make sure filters are visible */
+@media (max-width: 768px) {
+  .filter-button {
+    flex: 1 1 48%; /* Make buttons take up half the width */
+  }
+}
+@media (max-width: 480px) {
+  .animal-modal,
+  .category-modal {
+    max-width: 90%; /* Further reduce width for very small screens */
+    padding: 10px;
+  }
+
+  .input-field,
+  .submit-button {
+    width: 90%;
+    font-size: 14px; /* Slightly smaller font for inputs */
+    padding: 10px; /* Adjust padding for smaller screens */
+  }
+}
