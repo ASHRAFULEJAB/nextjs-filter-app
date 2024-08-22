@@ -49,8 +49,16 @@ const AddAnimalModal: React.FC<AddAnimalModalProps> = ({
     };
 
     // Make the POST request to save the new animal
-    await axios.post("/api/animals", newAnimal);
-    onAddAnimal(newAnimal);
+     try {
+       await axios.post(
+         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/animals`,
+         newAnimal
+       );
+       onAddAnimal(newAnimal);
+     } catch (error) {
+       console.error("Error adding animal:", error);
+     }
+    // onAddAnimal(newAnimal);
 
     // Reset form fields and close the modal
     setAnimalName("");

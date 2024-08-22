@@ -4,6 +4,7 @@ import axios from "axios";
 import Filter from "@/components/Filter";
 import Category from "@/components/Category";
 import AddCategoryModal from "@/components/AddCategoryModal";
+import AddAnimalModal from "@/components/AddAnimalModal";
 
 type Animal = {
   name: string;
@@ -13,15 +14,18 @@ type Animal = {
 
 export default function Home() {
   const [categories, setCategories] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("Land Animals");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [animals, setAnimals] = useState<Animal[]>([]);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isAnimalModalOpen, setIsAnimalModalOpen] = useState(false);
 
   useEffect(() => {
     // Fetch categories from the backend
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("/api/categories");
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/categories`
+        );
         const fetchedCategories = response.data.map(
           (category: { name: string }) => category.name
         );
@@ -34,7 +38,9 @@ export default function Home() {
     // Fetch animals from the backend
     const fetchAnimals = async () => {
       try {
-        const response = await axios.get("/api/animals");
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/animals`
+        );
         setAnimals(response.data);
       } catch (error) {
         console.error("Error fetching animals:", error);
@@ -58,16 +64,16 @@ export default function Home() {
   };
 
   const filteredAnimals =
-    selectedCategory === "Land Animals"
+    selectedCategory === "All"
       ? animals
       : animals.filter((animal) => animal.category === selectedCategory);
 
   return (
     <div className="app-container">
-     
+      <h1>Animal Filter</h1>
       <div className="">
         <Filter
-          categories={["Land Animals", ...categories]}
+          categories={["All", ...categories]}
           selectedCategory={selectedCategory}
           onSelectCategory={handleSelectCategory}
           onAddCategory={handleAddCategory}
@@ -80,6 +86,13 @@ export default function Home() {
         isOpen={isCategoryModalOpen}
         onRequestClose={() => setIsCategoryModalOpen(false)}
         onAddCategory={handleAddCategory}
+      />
+
+      <AddAnimalModal
+        isOpen={isAnimalModalOpen}
+        onRequestClose={() => setIsAnimalModalOpen(false)}
+        categories={categories}
+        onAddAnimal={handleAddAnimal}
       />
     </div>
   );

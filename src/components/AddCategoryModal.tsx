@@ -21,8 +21,15 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
     e.preventDefault();
 
     // Make the POST request to save the new category
-    await axios.post("/api/categories", { name: categoryName });
-    onAddCategory(categoryName);
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/categories`,
+        { name: categoryName }
+      );
+      onAddCategory(categoryName);
+    } catch (error) {
+      console.error("Error adding category:", error);
+    }
 
     // Reset form field and close the modal
     setCategoryName("");
