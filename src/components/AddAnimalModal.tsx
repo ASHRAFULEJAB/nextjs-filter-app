@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 import axios from "axios";
 
-// Modal.setAppElement("#__next"); // For accessibility, necessary with react-modal
-
 type AddAnimalModalProps = {
   isOpen: boolean;
   onRequestClose: () => void;
@@ -24,6 +22,7 @@ const AddAnimalModal: React.FC<AddAnimalModalProps> = ({
   const [animalName, setAnimalName] = useState("");
   const [animalImage, setAnimalImage] = useState<File | null>(null);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
+  const [uploading, setUploading] = useState(false); // State to manage upload status
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -34,37 +33,48 @@ const AddAnimalModal: React.FC<AddAnimalModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    let imageUrl = "";
-
-    if (animalImage) {
-      // You would typically upload the image to a cloud service like AWS S3, Cloudinary, etc.
-      // Here, we simulate the upload by creating an object URL (not suitable for production).
-      imageUrl = URL.createObjectURL(animalImage);
+    if (!animalImage) {
+      console.error("No image selected");
+      return;
     }
 
-    const newAnimal = {
-      name: animalName,
-      image: imageUrl,
-      category: selectedCategory,
-    };
+    setUploading(true);
 
-    // Make the POST request to save the new animal
-     try {
-       await axios.post(
-         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/animals`,
-         newAnimal
-       );
-       onAddAnimal(newAnimal);
-     } catch (error) {
-       console.error("Error adding animal:", error);
-     }
-    // onAddAnimal(newAnimal);
+    try {
+      // Upload image to ImgBB using the API key from the environment variable
+      const formData = new FormData();
+      formData.append("image", animalImage);
 
-    // Reset form fields and close the modal
-    setAnimalName("");
-    setAnimalImage(null);
-    setSelectedCategory(categories[0]);
-    onRequestClose();
+      const response = await axios.post(
+        `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`,
+        formData
+      );
+
+      const imageUrl = response.data.data.url; // Hosted image URL from ImgBB
+
+      const newAnimal = {
+        name: animalName,
+        image: imageUrl, // Use the hosted image URL
+        category: selectedCategory,
+      };
+
+      // Make the POST request to save the new animal with the hosted image URL
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/animals`,
+        newAnimal
+      );
+      onAddAnimal(newAnimal);
+
+      // Reset form fields and close the modal
+      setAnimalName("");
+      setAnimalImage(null);
+      setSelectedCategory(categories[0]);
+      onRequestClose();
+    } catch (error) {
+      console.error("Error uploading image or adding animal:", error);
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -113,8 +123,8 @@ const AddAnimalModal: React.FC<AddAnimalModalProps> = ({
             </option>
           ))}
         </select>
-        <button type="submit" className="submit-button">
-          Create Animal
+        <button type="submit" className="submit-button" disabled={uploading}>
+          {uploading ? "Uploading..." : "Create Animal"}
         </button>
       </form>
     </Modal>

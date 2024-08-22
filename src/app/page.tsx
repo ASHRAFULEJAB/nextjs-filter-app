@@ -14,7 +14,7 @@ type Animal = {
 
 export default function Home() {
   const [categories, setCategories] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("Land Animal");
   const [animals, setAnimals] = useState<Animal[]>([]);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isAnimalModalOpen, setIsAnimalModalOpen] = useState(false);
@@ -64,16 +64,15 @@ export default function Home() {
   };
 
   const filteredAnimals =
-    selectedCategory === "All"
+    selectedCategory === "Land Animal"
       ? animals
       : animals.filter((animal) => animal.category === selectedCategory);
 
   return (
     <div className="app-container">
-      <h1>Animal Filter</h1>
       <div className="">
         <Filter
-          categories={["All", ...categories]}
+          categories={["Land Animal", ...categories]}
           selectedCategory={selectedCategory}
           onSelectCategory={handleSelectCategory}
           onAddCategory={handleAddCategory}
